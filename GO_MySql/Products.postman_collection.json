@@ -1,0 +1,201 @@
+{
+	"info": {
+		"_postman_id": "8e4db4de-f40a-4dcc-a8ac-57a6eb35403c",
+		"name": "Products",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23548783"
+	},
+	"item": [
+		{
+			"name": "Create Product",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "RouterNEW11111",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "1000",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/home/rajnedrosau/Desktop/kushmanda/Backend-and-Infra/WBS_GO/templates/playstore.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/Product?",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"Product"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Product",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "TP-link",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "500",
+							"type": "text"
+						},
+						{
+							"key": "product_id",
+							"value": "12",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/home/rajnedrosau/Desktop/kushmanda/Backend-and-Infra/WBS_GO/templates/twitter.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/Product?",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"Product"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Product",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "product_id",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/Product?",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"Product"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All product By email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/Product?",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"Product"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

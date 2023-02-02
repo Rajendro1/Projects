@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "19276bf0-5bd5-4050-b55a-35ec95f89462",
+		"name": "USER",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23548783"
+	},
+	"item": [
+		{
+			"name": "Create Account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mode",
+							"value": "create_user",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "123456789",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "sausukannya@!#!##",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "West Bengal",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Sukannya",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/User_Authentication",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"User_Authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mode",
+							"value": "login",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "sausukannya@!#!##",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/User_Authentication",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"User_Authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Log Out",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mode",
+							"value": "logout",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "sausukannya@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/User_Authentication",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"User_Authentication"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

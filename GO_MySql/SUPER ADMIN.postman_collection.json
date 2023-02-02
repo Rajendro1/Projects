@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "1078a4c1-6b9b-4bee-b6db-3f76000c5e17",
+		"name": "SUPER ADMIN",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23548783"
+	},
+	"item": [
+		{
+			"name": "Check Users Activity",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "rajandroprosad1@gmail.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/Users_Activity",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"Users_Activity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/SuperAdmin_Authentication?mode=create_super_admin&email=saurajandroprosad@gmail.com&name=Rajendro Prasad Sau&phone=987654321&password=prasad@1&address=Kolkata",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"SuperAdmin_Authentication"
+					],
+					"query": [
+						{
+							"key": "mode",
+							"value": "create_super_admin"
+						},
+						{
+							"key": "email",
+							"value": "saurajandroprosad@gmail.com"
+						},
+						{
+							"key": "name",
+							"value": "Rajendro Prasad Sau"
+						},
+						{
+							"key": "phone",
+							"value": "987654321"
+						},
+						{
+							"key": "password",
+							"value": "prasad@1"
+						},
+						{
+							"key": "address",
+							"value": "Kolkata"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/SuperAdmin_Authentication?mode=login&email=saurajandroprosad@gmail.com&password=prasad@1",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"SuperAdmin_Authentication"
+					],
+					"query": [
+						{
+							"key": "mode",
+							"value": "login"
+						},
+						{
+							"key": "email",
+							"value": "saurajandroprosad@gmail.com"
+						},
+						{
+							"key": "name",
+							"value": "Rajendro Prasad Sau",
+							"disabled": true
+						},
+						{
+							"key": "phone",
+							"value": "987654321",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "prasad@1"
+						},
+						{
+							"key": "address",
+							"value": "Kolkata",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://dev.wikibedtimestories.com:1010/All_users_By_Super_Admin?email=saurajandroprosad@gmail.com",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"wikibedtimestories",
+						"com"
+					],
+					"port": "1010",
+					"path": [
+						"All_users_By_Super_Admin"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "saurajandroprosad@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
