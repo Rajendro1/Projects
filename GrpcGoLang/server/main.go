@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"grpc_sample/proto"
+	"github.com/Rajendro1/Projects/GrpGoLang/proto"
 	"net"
 
 	"google.golang.org/grpc"
@@ -41,3 +41,4 @@ func (s *server) Subtract(ctx context.Context, request *proto.Request) (*proto.R
 
 	return &proto.Response{Result: result}, nil
 }
+// protoc --go_out=plugins=grpc:. proto/service.proto

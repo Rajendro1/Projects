@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"grpc_sample/proto"
+	"github.com/Rajendro1/Projects/GrpGoLang/proto"
 	"log"
 	"net/http"
 	"strconv"
