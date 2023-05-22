@@ -2,7 +2,7 @@ package pgdatabase
 
 var (
 	CreatePlatformDatabaseQuery = `
-    CREATE DATABASE platform;
+    CREATE DATABASE accuknox;
     `
 )
 
@@ -10,21 +10,17 @@ var CreateTableQuery = `
 
 CREATE TABLE IF NOT EXISTS public.users
 (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name text DEFAULT NULL,
     email text DEFAULT NULL UNIQUE,
-    updated_by UUID DEFAULT NULL,
-    created_at timestamp DEFAULT NULL,
-    updated_at timestamp DEFAULT NULL
+    password text DEFAULT NULL,
+    session_id UUID DEFAULT gen_random_uuid()
 );
 CREATE TABLE IF NOT EXISTS public.notes
 (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID DEFAULT NULL,
+    id SERIAL PRIMARY KEY,
+    session_id text DEFAULT NULL,
+    user_id int DEFAULT NULL,
     note text DEFAULT NULL,
-	created_by UUID DEFAULT NULL,
-    updated_by UUID DEFAULT NULL,
-    created_at timestamp DEFAULT NULL,
-    updated_at timestamp DEFAULT NULL
 );
 `
