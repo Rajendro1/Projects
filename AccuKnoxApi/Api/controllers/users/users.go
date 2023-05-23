@@ -7,6 +7,7 @@ import (
 	"github.com/Rajendro1/Projects/AccuKnoxApi/config"
 	pgdatabase "github.com/Rajendro1/Projects/AccuKnoxApi/pgDatabase"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func CreateUsers() gin.HandlerFunc {
@@ -32,8 +33,8 @@ func CreateUsers() gin.HandlerFunc {
 						"message": "Sorry! we can't create your users",
 					})
 				} else {
-					c.JSON(config.CREATED, gin.H{
-						"status":  config.SUCCESS,
+					c.JSON(config.SUCCESS, gin.H{
+						"status":  config.CREATED,
 						"message": "User created successfully",
 						"data":    getUsers,
 					})
@@ -47,7 +48,7 @@ func CreateUsers() gin.HandlerFunc {
 			}
 		} else {
 			log.Println("input ERROR ", err.Error())
-			c.JSON(200, gin.H{
+			c.JSON(config.INPUTERROR, gin.H{
 				"status":  config.INPUTERROR,
 				"message": "input error",
 				"error":   err.Error(),
@@ -71,20 +72,30 @@ func PostLogin() gin.HandlerFunc {
 				}
 				dbPassword := getUsers.Password
 				if util.CheckPassword(input.Password, dbPassword) {
-					c.JSON(config.SUCCESS, gin.H{
-						"status":  config.SUCCESS,
-						"message": "Log in successfully",
-					})
-					return
+					sessionID := uuid.New()
+					_, updateSessionIDErr := pgdatabase.PatchSessionIDUsingEmail(input.Email, sessionID)
+					if updateSessionIDErr != nil {
+						c.JSON(config.SUCCESS, gin.H{
+							"status":  config.DBERROR,
+							"message": "Sorry! we can't updated the session id",
+							"error":   updateSessionIDErr.Error(),
+						})
+					} else {
+						c.JSON(config.SUCCESS, gin.H{
+							"status":  config.SUCCESS,
+							"message": "Log in successfully",
+							"sid":     sessionID,
+						})
+					}
 				} else {
-					c.JSON(config.SUCCESS, gin.H{
+					c.JSON(config.UNAUTHORIZE, gin.H{
 						"status":  config.UNAUTHORIZE,
 						"message": "Sorry! your password is not match",
 					})
 				}
 
 			} else {
-				c.JSON(config.SUCCESS, gin.H{
+				c.JSON(config.UNAUTHORIZE, gin.H{
 					"status":  config.UNAUTHORIZE,
 					"message": "Sorry! your email is not present in our database",
 				})
@@ -92,7 +103,7 @@ func PostLogin() gin.HandlerFunc {
 			}
 		} else {
 			log.Println("input ERROR ", err.Error())
-			c.JSON(200, gin.H{
+			c.JSON(config.INPUTERROR, gin.H{
 				"status":  config.INPUTERROR,
 				"message": "input error",
 				"error":   err.Error(),

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.users
     name text DEFAULT NULL,
     email text DEFAULT NULL UNIQUE,
     password text DEFAULT NULL,
-    session_id UUID DEFAULT gen_random_uuid()
+    session_id text DEFAULT NULL
 );
 CREATE TABLE IF NOT EXISTS public.notes
 (

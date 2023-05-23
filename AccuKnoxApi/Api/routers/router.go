@@ -3,6 +3,7 @@ package routers
 import (
 	"net/http"
 
+	"github.com/Rajendro1/Projects/AccuKnoxApi/Api/controllers/notes"
 	"github.com/Rajendro1/Projects/AccuKnoxApi/Api/controllers/users"
 	"github.com/Rajendro1/Projects/AccuKnoxApi/config"
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,10 @@ func HandleRequest() {
 
 	r.POST("/signup", users.CreateUsers())
 	r.POST("/login", users.PostLogin())
+
+	r.GET("/notes", notes.GetNotes())
+	r.POST("/notes", notes.CreateNotes())
+	r.DELETE("/notes", notes.DeleteNote())
 
 	r.Run(":" + config.APP_HTTP_PORT)
 }

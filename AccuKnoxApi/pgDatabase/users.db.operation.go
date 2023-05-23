@@ -3,6 +3,8 @@ package pgdatabase
 import (
 	"database/sql"
 	"log"
+
+	"github.com/google/uuid"
 )
 
 func CreateUsersToDatabase(email, name, password string) (bool, uint32, error) {
@@ -45,6 +47,23 @@ func VerifyUsersEmailToDatabase(email string) bool {
 	SqlQuery := `SELECT id FROM users WHERE email = $1`
 	if err := DB.QueryRow(SqlQuery, email).Scan(&id); err != nil && err == sql.ErrNoRows {
 		log.Println("VerifyUsersEmailToDatabase QueryRow ", err.Error())
+		return false
+	}
+	return true
+}
+func PatchSessionIDUsingEmail(email string, session_id uuid.UUID) (bool, error) {
+	sqlQuery := `UPDATE users SET session_id = $1 WHERE email = $2`
+	if _, errExec := DB.Exec(sqlQuery, session_id, email); errExec != nil {
+		log.Println("PatchSessionIDUsingEmail Exec ", errExec.Error())
+		return false, errExec
+	}
+	return true, nil
+}
+func VerifyUsersSessionIDToDatabase(session_id string) bool {
+	var id string
+	SqlQuery := `SELECT id FROM users WHERE session_id = $1`
+	if err := DB.QueryRow(SqlQuery, session_id).Scan(&id); err != nil && err == sql.ErrNoRows {
+		log.Println("VerifyUsersSessionIDToDatabase QueryRow ", err.Error())
 		return false
 	}
 	return true

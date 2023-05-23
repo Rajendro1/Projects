@@ -21,7 +21,6 @@ type (
 		ID        uint32 `json:"id"`
 		SessionId string `json:"sessionId"`
 		Note      string `json:"note"`
-		UsersID   uint32 `json:"userId"`
 	}
 	NotesNull struct {
 		Note sql.NullString
