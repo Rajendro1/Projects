@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	// "github.com/Weareflexable/platform/config"
+	"github.com/Rajendro1/Projects/AccuKnoxApi/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,14 +52,4 @@ func createpgdatabase(c *gin.Context, url string) {
 		log.Println("********* pgdatabase********************")
 	}
 
-}
-func createTable() error {
-	if _, tableExecErr := DB.Exec(CreateTableQuery); tableExecErr != nil {
-		log.Println("**************Table****************")
-		log.Println(tableExecErr.Error())
-		log.Println("***************Table***************")
-		return tableExecErr
-	}
-	log.Println("create table successfully")
-	return nil
 }
