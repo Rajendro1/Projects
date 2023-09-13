@@ -12,8 +12,6 @@ import (
 )
 
 func main() {
-	// createPass()
-	// testP()
 	r := gin.Default()
 	r.GET("", CreatePkPass)
 
