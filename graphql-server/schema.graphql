@@ -1,0 +1,6 @@
+type Story {
+  storyID: ID!
+}
+type Query {
+  getStories: [Story!]!
+}
