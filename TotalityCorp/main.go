@@ -71,7 +71,6 @@ func startGinServer() {
 	r := gin.Default()
 
 	r.GET("/user", func(c *gin.Context) {
-		// idStr := c.Param("id")
 		idStr := c.Request.FormValue("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
@@ -101,7 +100,7 @@ func startGinServer() {
 		c.JSON(http.StatusOK, resp)
 	})
 	r.GET("/users", func(c *gin.Context) {
-		idsStr := c.Query("ids")
+		idsStr := c.Request.FormValue("ids")
 		idStrs := strings.Split(idsStr, ",")
 		var ids []int32
 		for _, idStr := range idStrs {
