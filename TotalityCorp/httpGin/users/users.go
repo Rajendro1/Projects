@@ -11,10 +11,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
 	userpb "main.go/userProto"
 )
 
-func GetUserById() gin.HandlerFunc {
+func GetUserById(lis *bufconn.Listener) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Request.FormValue("id")
 		id, err := strconv.Atoi(idStr)
@@ -24,11 +25,17 @@ func GetUserById() gin.HandlerFunc {
 		}
 
 		// Connect to gRPC server
+
 		cc, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to gRPC server"})
 			return
 		}
+
+		// cc, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(func(ctx context.Context, s string) (net.Conn, error) {
+		// 	return lis.Dial()
+		// }), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
 		defer cc.Close()
 
 		client := userpb.NewUserServiceClient(cc)
