@@ -27,7 +27,6 @@ var mockDB = []userpb.User{
 
 type server struct {
 	userpb.UnimplementedUserServiceServer
-	users []*userpb.User
 }
 
 func (s *server) GetUserById(ctx context.Context, req *userpb.UserRequest) (*userpb.User, error) {
