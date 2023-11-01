@@ -1,4 +1,4 @@
-package httpgin_test
+package users_test
 
 import (
 	"context"

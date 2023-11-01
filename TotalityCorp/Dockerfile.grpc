@@ -1,0 +1,14 @@
+# gRPC Service Dockerfile
+FROM golang:latest
+
+WORKDIR /app
+
+COPY . .
+
+ENV GOPROXY=https://proxy.golang.org
+
+RUN go build -o grpc-server .
+
+EXPOSE 50051
+
+CMD ["./grpc-server"]

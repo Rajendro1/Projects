@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  grpc-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.grpc  # Name of the Dockerfile for gRPC
+    ports:
+      - "50051:50051"
+
+  gin-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.gin  # Name of the Dockerfile for Gin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - grpc-server
