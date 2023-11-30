@@ -1,0 +1,52 @@
+{
+    "data":[
+        {
+            "storyID": 604,
+            "views": 8,
+            "conclusion": "Now, Stacy was a part of the group and they sang this song everyday!  \r\n\"I am a fairy and I live in a Fairyland!\"  ",
+            "title": "Tattletale",
+            "summary": "Stacy was a good fairy but she had a bad habit that other fairies hated.",
+            "story": "",
+            "rating": "4",
+            "authorName": "Vaishali Sharma",
+            "creationDate": "2023-11-28",
+            "authorUserID": 13,
+            "favouriteStory": false,
+            "readingTime": 2,
+            "categoryImageName": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/ws/categories/images/Tattletale_604.jpg",
+            "categoryName": "",
+            "audioStatus": false,
+            "audioLocation": "No document found",
+            "narratorName": "no narrator found",
+            "status": 3,
+            "userImage": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/um/users/images/13.jpg",
+            "sequenceID": 0,
+            "storyBackGroundImage": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/ws/stories/background/images/background_Tattletale_604.jpg",
+            "storyThumbnailImage": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/ws/stories/thumbnail/images/thumbnail_Tattletale_604.jpg"
+        },
+        {
+            "storyID": 603,
+            "views": 29,
+            "conclusion": "Sharing is caring.",
+            "title": "The Big Lemon",
+            "summary": "Manny found a big lemon and decided to use it wisely.",
+            "story": "",
+            "rating": "3.75",
+            "authorName": "Vaishali Sharma",
+            "creationDate": "2023-11-24",
+            "authorUserID": 13,
+            "favouriteStory": false,
+            "readingTime": 3,
+            "categoryImageName": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/ws/categories/images/The_Big_Lemon_603.jpg",
+            "categoryName": "",
+            "audioStatus": false,
+            "audioLocation": "No document found",
+            "narratorName": "no narrator found",
+            "status": 3,
+            "userImage": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/um/users/images/13.jpg",
+            "sequenceID": 0,
+            "storyBackGroundImage": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/ws/stories/background/images/background_The_Big_Lemon_603.jpg",
+            "storyThumbnailImage": "https://usc1.contabostorage.com/c90a0b065b91428eb30d29775630936d:wbs-prod/ws/stories/thumbnail/images/thumbnail_The_Big_Lemon_603.jpg"
+        }
+    ]
+}
