@@ -2,31 +2,21 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"net/http"
 )
 
-type Message struct {
-	Username string `json:"username"`
-	Text     string `json:"text"`
-}
-
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-type Client struct {
+type ClientV2 struct {
 	conn     *websocket.Conn
 	username string
 }
 
-var clients = make(map[*websocket.Conn]Client)
-var broadcast = make(chan Message)
+var clientsV2 = make(map[string]Client)
+var broadcastV2 = make(chan Message)
 
-func handleConnections(c *gin.Context) {
+func handleConnectionsV2(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		fmt.Println(err)
@@ -36,7 +26,7 @@ func handleConnections(c *gin.Context) {
 
 	username := c.Query("username")
 	client := Client{conn: ws, username: username}
-	clients[ws] = client
+	clientsV2[username] = client
 
 	fmt.Printf("New connection: %s\n", username)
 
@@ -45,7 +35,7 @@ func handleConnections(c *gin.Context) {
 		err := ws.ReadJSON(&msg)
 		if err != nil {
 			fmt.Printf("Error reading message: %v\n", err)
-			delete(clients, ws)
+			delete(clientsV2, username)
 			break
 		}
 
@@ -54,37 +44,36 @@ func handleConnections(c *gin.Context) {
 	}
 }
 
-func handleMessages() {
+func handleMessagesV2() {
 	for {
 		msg := <-broadcast
 
-		// Send the message to all connected clients
-		for _, client := range clients {
+		// Send the message to a specific user
+		if client, ok := clientsV2[msg.Username]; ok {
 			err := client.conn.WriteJSON(msg)
 			if err != nil {
-				fmt.Printf("Error writing message: %v\n", err)
-				delete(clients, client.conn)
-				break
+				fmt.Printf("Error writing message to %s: %v\n", msg.Username, err)
+				delete(clientsV2, msg.Username)
 			}
 		}
 	}
 }
 
 // NewMessageHandler handles incoming messages from the clients
-func NewMessageHandler(c *gin.Context) {
+func NewMessageHandlerV2(c *gin.Context) {
 	var msg Message
 	if err := c.BindJSON(&msg); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid message format"})
 		return
 	}
 
-	// Broadcast the received message to all clients
+	// Broadcast the received message to a specific user
 	broadcast <- msg
 
 	c.JSON(http.StatusOK, gin.H{"status": "Message sent successfully"})
 }
 
-func webScoket() {
+func webScokitV2() {
 	r := gin.Default()
 
 	r.GET("/ws", func(c *gin.Context) {
