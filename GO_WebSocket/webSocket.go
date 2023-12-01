@@ -18,6 +18,7 @@ var upgrader = websocket.Upgrader{
 // handleWebSocket handles new WebSocket connections using Gin.
 func handleWebSocket1(c *gin.Context) {
 	// Upgrade the HTTP connection to a WebSocket connection
+	// conn1, err1 := upgrader.
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		fmt.Println("Upgrade error:", err)
