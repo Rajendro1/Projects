@@ -2,101 +2,58 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"net/http"
 )
 
-type Message struct {
-	Username string `json:"username"`
-	Text     string `json:"text"`
-}
-
+// Upgrader is used to upgrade HTTP connections to WebSocket connections.
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return true
+		return true // Allow connections from any origin
 	},
 }
 
-type Client struct {
-	conn     *websocket.Conn
-	username string
-}
-
-var clients = make(map[*websocket.Conn]Client)
-var broadcast = make(chan Message)
-
-func handleConnections(c *gin.Context) {
-	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+// handleWebSocket handles new WebSocket connections using Gin.
+func handleWebSocket1(c *gin.Context) {
+	// Upgrade the HTTP connection to a WebSocket connection
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Upgrade error:", err)
 		return
 	}
-	defer ws.Close()
+	defer conn.Close()
 
-	username := c.Query("username")
-	client := Client{conn: ws, username: username}
-	clients[ws] = client
+	fmt.Println("New WebSocket connection")
 
-	fmt.Printf("New connection: %s\n", username)
-
+	// Handle messages from this connection
 	for {
-		var msg Message
-		err := ws.ReadJSON(&msg)
+		_, message, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Printf("Error reading message: %v\n", err)
-			delete(clients, ws)
+			fmt.Println("Read error:", err)
 			break
 		}
+		fmt.Printf("Received: %s\n", message)
 
-		// Broadcast the received message to all clients
-		broadcast <- msg
-	}
-}
-
-func handleMessages() {
-	for {
-		msg := <-broadcast
-
-		// Send the message to all connected clients
-		for _, client := range clients {
-			err := client.conn.WriteJSON(msg)
-			if err != nil {
-				fmt.Printf("Error writing message: %v\n", err)
-				delete(clients, client.conn)
-				break
-			}
+		// Echo the message back to the client
+		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+			fmt.Println("Write error:", err)
+			break
 		}
 	}
 }
 
-// NewMessageHandler handles incoming messages from the clients
-func NewMessageHandler(c *gin.Context) {
-	var msg Message
-	if err := c.BindJSON(&msg); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid message format"})
-		return
-	}
-
-	// Broadcast the received message to all clients
-	broadcast <- msg
-
-	c.JSON(http.StatusOK, gin.H{"status": "Message sent successfully"})
-}
-
-func webScoket() {
+func websocketv1() {
+	// Create a Gin router
 	r := gin.Default()
 
-	r.GET("/ws", func(c *gin.Context) {
-		handleConnections(c)
-	})
+	// Define a route for WebSocket connections
+	r.GET("/ws", handleWebSocket1)
 
-	r.POST("/send-message", NewMessageHandler)
-
-	go handleMessages()
-
-	err := r.Run(":8080")
-	if err != nil {
-		fmt.Println(err)
+	// Start the Gin server on port 8080
+	fmt.Println("Server started on :8080")
+	if err := r.Run(":8080"); err != nil {
+		fmt.Println("Run error:", err)
 	}
 }

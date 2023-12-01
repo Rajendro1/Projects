@@ -12,6 +12,21 @@ type ClientV2 struct {
 	conn     *websocket.Conn
 	username string
 }
+type Message struct {
+	Username string `json:"username"`
+	Text     string `json:"text"`
+}
+
+var upgrader1 = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+type Client struct {
+	conn     *websocket.Conn
+	username string
+}
 
 var clientsV2 = make(map[string]Client)
 var broadcastV2 = make(chan Message)
@@ -40,13 +55,13 @@ func handleConnectionsV2(c *gin.Context) {
 		}
 
 		// Broadcast the received message to all clients
-		broadcast <- msg
+		broadcastV2 <- msg
 	}
 }
 
 func handleMessagesV2() {
 	for {
-		msg := <-broadcast
+		msg := <-broadcastV2
 
 		// Send the message to a specific user
 		if client, ok := clientsV2[msg.Username]; ok {
@@ -68,7 +83,7 @@ func NewMessageHandlerV2(c *gin.Context) {
 	}
 
 	// Broadcast the received message to a specific user
-	broadcast <- msg
+	broadcastV2 <- msg
 
 	c.JSON(http.StatusOK, gin.H{"status": "Message sent successfully"})
 }
@@ -77,12 +92,12 @@ func webScokitV2() {
 	r := gin.Default()
 
 	r.GET("/ws", func(c *gin.Context) {
-		handleConnections(c)
+		handleMessagesV2()
 	})
 
-	r.POST("/send-message", NewMessageHandler)
+	r.POST("/send-message", NewMessageHandlerV2)
 
-	go handleMessages()
+	go handleMessagesV2()
 
 	err := r.Run(":8080")
 	if err != nil {
