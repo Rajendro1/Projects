@@ -1,0 +1,41 @@
+definitions:
+  main.InputStruct:
+    properties:
+      title:
+        type: string
+      title1:
+        type: string
+    type: object
+  main.ResonseStruct:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /:
+    post:
+      consumes:
+      - application/json
+      description: Create a new book and return its details
+      parameters:
+      - description: Book details in JSON format
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/main.InputStruct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ResonseStruct'
+      summary: Create a book
+      tags:
+      - books
+swagger: "2.0"

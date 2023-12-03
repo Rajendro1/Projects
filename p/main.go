@@ -163,10 +163,11 @@ func (cErr CustomeError) Error2() string {
 
 func main() {
 	// initDB()
-	MysqlConnection()
-	defer db.Close()
+	// MysqlConnection()
+	// defer db.Close()
 	// handelRoutes()
-	DynamicFunction()
+	// DynamicFunction()
+	fiberRoute()
 }
 
 // func main() {
