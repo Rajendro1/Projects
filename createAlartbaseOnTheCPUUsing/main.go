@@ -25,3 +25,24 @@ func main() {
 		time.Sleep(2 * time.Second)
 	}
 }
+func printResourceUsage(label string) {
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+
+	fmt.Printf("%s:\n", label)
+	fmt.Println("timeStamp: ", time.Now().Format("2006-01-02 15:04:05"))
+	fmt.Printf("  Memory Usage: %v MB\n", bToMb(memStats.Alloc))
+	fmt.Printf("  Total Allocated Memory: %v MB\n", bToMb(memStats.TotalAlloc))
+	fmt.Printf("  CPU Usage: %v\n", getCpuUsage())
+
+	fmt.Println("----------------------")
+}
+
+func bToMb(b uint64) uint64 {
+	return b / 1024 / 1024
+}
+
+func getCpuUsage() string {
+	cpuStats := runtime.NumCPU()
+	return fmt.Sprintf("%d cores", cpuStats)
+}
