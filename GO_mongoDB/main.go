@@ -79,11 +79,7 @@ func readExcelFile(filePath string) {
 			}
 			// -----------------backup----------------
 			backpackDocument := bson.D{{"redisKey", hash}, {"rowString", rowString}}
-			for i, cell := range row {
-				if i < len(headers) {
-					backpackDocument = append(backpackDocument, bson.E{Key: headers[i], Value: cell})
-				}
-			}
+
 			backupDocuments = append(backupDocuments, backpackDocument)
 
 			if len(backupDocuments) >= backupDocumentsBatchSize {
