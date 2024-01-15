@@ -11,8 +11,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var client *mongo.Client
+var err error
+
 func Connect() *mongo.Client {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://RajendroSau:rajandrO21@cluster0.nwqhn1l.mongodb.net/?retryWrites=true&w=majority"))
+	client, err = mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		log.Fatal(err)
 	}
