@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -35,9 +36,6 @@ func ParseCurlCommand(curlCommand string) (ParsedCurl, error) {
 		Headers:    make(map[string]string),
 		AuthParams: make(map[string]string), // For additional auth parameters
 	}
-
-	// Remove line breaks to ensure the command is parsed as a single string
-	curlCommand = strings.ReplaceAll(curlCommand, "\\\n", " ")
 
 	// Split the command into parts
 	parts := strings.FieldsFunc(curlCommand, func(c rune) bool {
@@ -78,7 +76,6 @@ func ParseCurlCommand(curlCommand string) (ParsedCurl, error) {
 	if parsed.URL == "" {
 		return parsed, errors.New("no URL found")
 	}
-
 	determineContentType(&parsed)
 
 	return parsed, nil
@@ -143,12 +140,16 @@ func handleMethod(parts []string, i int, parsed *ParsedCurl) int {
 // handleHeader handles the header parsing and identifies authorization types.
 func handleHeader(parts []string, i int, parsed *ParsedCurl) int {
 	if i+1 < len(parts) {
-		header := strings.SplitN(parts[i+1], ":", 2)
-		if len(header) == 2 {
-			key := strings.TrimSpace(header[0])
-			value := strings.TrimSpace(header[1])
+		// Using regex to account for possible spaces around the colon and within quotes
+		headerPattern := regexp.MustCompile(`^([^:]+):\s*(.+)$`)
+		matches := headerPattern.FindStringSubmatch(parts[i+1])
+		if len(matches) == 3 {
+			key := strings.TrimSpace(matches[1])
+			value := strings.TrimSpace(matches[2])
 			parsed.Headers[key] = value
 			handleAuthorizationHeader(key, value, parsed)
+		} else {
+			fmt.Errorf("invalid header format: %s", parts[i+1])
 		}
 		return i + 1
 	}
@@ -324,24 +325,29 @@ func HandleRoute() {
 	r.GET("/", func(c *gin.Context) {
 
 		singleLineCommand := c.Request.FormValue("data")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\n", " ")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\t", "") // Optional: remove tabs if necessary
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, `curl `, "")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, `    `, "")
+		// First remove double backslashes to ensure they are not turned into single backslashes in the next step
 		singleLineCommand = strings.ReplaceAll(singleLineCommand, `\\`, "")
+		// Now safely remove any remaining single backslashes
 		singleLineCommand = strings.ReplaceAll(singleLineCommand, `\`, "")
-		c.JSON(http.StatusOK, singleLineCommand)
+		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\n", " ")
+		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\t", "")
+		singleLineCommand = strings.ReplaceAll(singleLineCommand, `curl `, "")
+		// Consider whether you really want to remove all four space sequences; maybe trim or regularize spaces instead
+		singleLineCommand = strings.ReplaceAll(singleLineCommand, `    `, "")
+		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\\\n", " ")
+
+		c.JSON(http.StatusOK, gin.H{"one_line": singleLineCommand})
 		parsed, err := ParseCurlCommand(singleLineCommand)
 		if err != nil {
 			fmt.Println("Error parsing cURL command:", err)
-			c.JSON(http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		response, err := ExecuteCurlCommand(parsed)
 		if err != nil {
 			fmt.Println("Error executing cURL command:", err)
-			c.JSON(http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"response": response})
