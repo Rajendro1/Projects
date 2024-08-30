@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
+	"os"
 	"strings"
 	"time"
 
@@ -137,38 +137,65 @@ func handleMethod(parts []string, i int, parsed *ParsedCurl) int {
 	return i
 }
 
-// handleHeader handles the header parsing and identifies authorization types.
 func handleHeader(parts []string, i int, parsed *ParsedCurl) int {
 	if i+1 < len(parts) {
-		// Using regex to account for possible spaces around the colon and within quotes
-		headerPattern := regexp.MustCompile(`^([^:]+):\s*(.+)$`)
-		matches := headerPattern.FindStringSubmatch(parts[i+1])
-		if len(matches) == 3 {
-			key := strings.TrimSpace(matches[1])
-			value := strings.TrimSpace(matches[2])
+		// The next part should be the full header, so capture it
+		rawHeader := parts[i+1]
+
+		// Check if the raw header part starts with 'Authorization:'
+		if strings.HasPrefix(rawHeader, "'Authorization:") {
+			// Combine the parts of the header if it's split due to spaces/newlines
+			for i+2 < len(parts) && !strings.HasPrefix(parts[i+2], "--") {
+				rawHeader += " " + parts[i+2]
+				i++
+			}
+		}
+
+		// Now safely trim the surrounding quotes, if any
+		headerValue := strings.Trim(rawHeader, "'\"")
+
+		// Split on the first colon to separate the key and value
+		splitIndex := strings.Index(headerValue, ":")
+		if splitIndex != -1 {
+			key := strings.TrimSpace(headerValue[:splitIndex])
+			value := strings.TrimSpace(headerValue[splitIndex+1:])
+
 			parsed.Headers[key] = value
 			handleAuthorizationHeader(key, value, parsed)
 		} else {
-			fmt.Errorf("invalid header format: %s", parts[i+1])
+			fmt.Printf("Invalid header format: %s\n", headerValue)
 		}
 		return i + 1
 	}
 	return i
 }
 
-// handleAuthorizationHeader handles the various types of authorization headers.
 func handleAuthorizationHeader(key, value string, parsed *ParsedCurl) {
 	if strings.ToLower(key) == "authorization" {
 		authParts := strings.Fields(value)
+		if len(authParts) == 0 {
+			// Log or handle the case where the Authorization header is empty
+			fmt.Println("Warning: Authorization header is empty or malformed.")
+			return
+		}
+
 		authType := strings.ToLower(authParts[0])
 
 		switch authType {
 		case "basic":
-			parsed.AuthType = "basic"
-			parsed.AuthToken = authParts[1]
+			if len(authParts) > 1 {
+				parsed.AuthType = "basic"
+				parsed.AuthToken = authParts[1]
+			} else {
+				fmt.Println("Warning: Basic authorization token is missing.")
+			}
 		case "bearer":
-			parsed.AuthType = "bearer"
-			parsed.AuthToken = authParts[1]
+			if len(authParts) > 1 {
+				parsed.AuthType = "bearer"
+				parsed.AuthToken = authParts[1]
+			} else {
+				fmt.Println("Warning: Bearer token is missing.")
+			}
 		case "digest":
 			parsed.AuthType = "digest"
 			parsed.AuthParams["digest"] = value
@@ -190,8 +217,12 @@ func handleAuthorizationHeader(key, value string, parsed *ParsedCurl) {
 			parsed.AuthType = "asap"
 			parsed.AuthParams["asap"] = value
 		default:
-			parsed.AuthType = authType
-			parsed.AuthToken = authParts[1]
+			if len(authParts) > 1 {
+				parsed.AuthType = authType
+				parsed.AuthToken = authParts[1]
+			} else {
+				fmt.Printf("Warning: Unrecognized authorization type or token is missing: %s\n", authType)
+			}
 		}
 	}
 }
@@ -256,10 +287,10 @@ func determineContentType(parsed *ParsedCurl) {
 	}
 }
 
-// ExecuteCurlCommand executes the given cURL command and returns the response as an interface{}.
 func ExecuteCurlCommand(parsed ParsedCurl) (map[string]interface{}, error) {
 	// Create the HTTP client with a timeout
 	client := &http.Client{Timeout: 10 * time.Second}
+
 	// Create the HTTP request
 	req, err := http.NewRequest(parsed.Method, parsed.URL, bytes.NewBuffer([]byte(parsed.Body)))
 	if err != nil {
@@ -276,10 +307,25 @@ func ExecuteCurlCommand(parsed ParsedCurl) (map[string]interface{}, error) {
 	if parsed.AuthType == "basic" {
 		req.SetBasicAuth(parsed.AuthUsername, parsed.AuthPassword)
 	}
+
+	// Measure the time taken for the request
+	startTime := time.Now()
+
 	// Execute the request
 	resp, err := client.Do(req)
+	timeTaken := time.Since(startTime).Milliseconds()
+
+	response := make(map[string]interface{})
+
 	if err != nil {
-		return nil, err
+		// Check if the error is a timeout
+		if os.IsTimeout(err) {
+			response["error"] = "request timeout"
+		} else {
+			response["error"] = err.Error()
+		}
+		response["time_taken_ms"] = timeTaken
+		return response, err
 	}
 	defer resp.Body.Close()
 
@@ -291,7 +337,6 @@ func ExecuteCurlCommand(parsed ParsedCurl) (map[string]interface{}, error) {
 
 	// Determine response type (JSON, XML, etc.)
 	contentType := resp.Header.Get("Content-Type")
-	response := make(map[string]interface{})
 	if strings.Contains(contentType, "application/json") {
 		var jsonData interface{}
 		if err = json.Unmarshal(body, &jsonData); err != nil {
@@ -310,6 +355,7 @@ func ExecuteCurlCommand(parsed ParsedCurl) (map[string]interface{}, error) {
 	}
 
 	response["status_code"] = resp.StatusCode
+	response["time_taken_ms"] = timeTaken
 
 	return response, nil
 }
@@ -323,20 +369,8 @@ func HandleRoute() {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
+		singleLineCommand := preprocessCurlCommand(c.Request.FormValue("curl_url"))
 
-		singleLineCommand := c.Request.FormValue("data")
-		// First remove double backslashes to ensure they are not turned into single backslashes in the next step
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, `\\`, "")
-		// Now safely remove any remaining single backslashes
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, `\`, "")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\n", " ")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\t", "")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, `curl `, "")
-		// Consider whether you really want to remove all four space sequences; maybe trim or regularize spaces instead
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, `    `, "")
-		singleLineCommand = strings.ReplaceAll(singleLineCommand, "\\\n", " ")
-
-		c.JSON(http.StatusOK, gin.H{"one_line": singleLineCommand})
 		parsed, err := ParseCurlCommand(singleLineCommand)
 		if err != nil {
 			fmt.Println("Error parsing cURL command:", err)
@@ -347,15 +381,28 @@ func HandleRoute() {
 		response, err := ExecuteCurlCommand(parsed)
 		if err != nil {
 			fmt.Println("Error executing cURL command:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "response": response})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"response": response})
-
 	})
+
 	r.GET("/new", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "DON")
 	})
 
 	r.Run(":80")
+}
+
+// preprocessCurlCommand cleans up the cURL command string.
+func preprocessCurlCommand(curlCommand string) string {
+	// Remove unwanted characters and regularize spaces
+	command := strings.ReplaceAll(curlCommand, `\\`, "")
+	command = strings.ReplaceAll(command, `\`, "")
+	command = strings.ReplaceAll(command, "\n", " ")
+	command = strings.ReplaceAll(command, "\t", "")
+	command = strings.ReplaceAll(command, `curl `, "")
+	command = strings.ReplaceAll(command, `    `, "")
+	command = strings.ReplaceAll(command, "\\\n", " ")
+	return command
 }
