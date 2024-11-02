@@ -290,7 +290,8 @@ func determineContentType(parsed *ParsedCurl) {
 func ExecuteCurlCommand(parsed ParsedCurl) (map[string]interface{}, error) {
 	// Create the HTTP client with a timeout
 	client := &http.Client{Timeout: 10 * time.Second}
-
+	parsed.Body = strings.ReplaceAll(parsed.Body, " ", "")
+	fmt.Println("body---", parsed.Body, "conten", parsed.ContentType, "url", parsed.URL, "Method", parsed.Method)
 	// Create the HTTP request
 	req, err := http.NewRequest(parsed.Method, parsed.URL, bytes.NewBuffer([]byte(parsed.Body)))
 	if err != nil {
@@ -377,6 +378,7 @@ func HandleRoute() {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		fmt.Println("----------", parsed.Body)
 
 		response, err := ExecuteCurlCommand(parsed)
 		if err != nil {
