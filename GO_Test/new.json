@@ -1,0 +1,56 @@
+[
+    {
+        "employeeName": "TestUSer1",
+        "employeeCode": "10001",
+        "employeeContact": [
+            {
+                "address": "A",
+                "phoneNumber": [
+                    123456789,
+                    9789845333
+                ]
+            },
+            {
+                "address": "B",
+                "phoneNumber": [
+                    223456789,
+                    8789845333
+                ]
+            },
+            {
+                "address": "C",
+                "phoneNumber": [
+                    323456789,
+                    7789845333
+                ]
+            }
+        ]
+    },
+    {
+        "employeeName": "TestUSer2",
+        "employeeCode": "10002",
+        "employeeContact": [
+            {
+                "address": "D",
+                "phoneNumber": [
+                    423456789,
+                    4789845333
+                ]
+            },
+            {
+                "address": "E",
+                "phoneNumber": [
+                    523456789,
+                    5789845333
+                ]
+            },
+            {
+                "address": "F",
+                "phoneNumber": [
+                    623456789,
+                    6789845333
+                ]
+            }
+        ]
+    }
+]
