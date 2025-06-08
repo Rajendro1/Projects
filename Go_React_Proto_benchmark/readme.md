@@ -1,0 +1,1 @@
+```protoc --go_out=./proto --go_opt=paths=source_relative user.proto```

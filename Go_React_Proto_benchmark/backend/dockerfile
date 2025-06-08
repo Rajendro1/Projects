@@ -1,0 +1,27 @@
+FROM golang:1.24
+
+WORKDIR /app
+
+# Install protoc compiler
+RUN apt-get update && apt-get install -y protobuf-compiler
+
+# Copy go.mod and go.sum first for caching dependencies
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+# Copy all source files including user.proto
+COPY . .
+
+# Generate Go protobuf code
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
+# Run protoc on user.proto (make sure file is in /app)
+RUN protoc --go_out=. user.proto
+
+# Build the Go binary
+RUN go build -o server main.go
+
+EXPOSE 8080
+
+CMD ["./server"]

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package user;
+
+// Required for Go code generation
+option go_package = "userpb";
+
+// Message definition
+message User {
+  string name = 1;
+  int32 age = 2;
+}
